@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GarageApp — Gestion Moto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+:root {
+  --bg: #0f0f0f;
+  --bg2: #181818;
+  --bg3: #222222;
+  --border: #333;
+  --accent: #f5a623;
+  --accent2: #e8453c;
+  --text: #e8e8e8;
+  --text2: #888;
+  --green: #4caf50;
+  --blue: #2196f3;
+  --radius: 6px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  background: var(--bg2);
+  border-bottom: 2px solid var(--accent);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 28px;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+.logo span { color: var(--text2); font-size: 13px; font-family: 'IBM Plex Mono', monospace; display: block; line-height: 1; margin-top: -4px; }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+.user-badge {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* NAV */
+nav {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  padding: 0 20px;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: var(--text2);
+  padding: 14px 20px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+nav button:hover { color: var(--text); }
+nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* MAIN */
+main { padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* STATS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.stat-card .label { color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.stat-card .value { font-family: 'Bebas Neue', cursive; font-size: 36px; color: var(--accent); }
+.stat-card .sub { color: var(--text2); font-size: 11px; margin-top: 4px; }
+
+/* SECTION HEADER */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-header h2 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+/* BUTTONS */
+.btn {
+  padding: 8px 18px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #ffc147; }
+.btn-danger { background: var(--accent2); color: #fff; }
+.btn-danger:hover { background: #ff6b63; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); border-color: var(--text2); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* TABLE */
+.table-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.table-wrap table { width: 100%; border-collapse: collapse; }
+.table-wrap th {
+  background: var(--bg3);
+  color: var(--text2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+.table-wrap td {
+  padding: 11px 14px;
+  border-top: 1px solid var(--border);
+  vertical-align: middle;
+}
+.table-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* BADGE */
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.badge-orange { background: rgba(245,166,35,0.2); color: var(--accent); }
+.badge-green { background: rgba(76,175,80,0.2); color: var(--green); }
+.badge-red { background: rgba(232,69,60,0.2); color: var(--accent2); }
+.badge-blue { background: rgba(33,150,243,0.2); color: var(--blue); }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h3 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+/* FORM */
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 9px 12px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--accent); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* SEARCH */
+.search-bar {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 9px 14px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  width: 260px;
+}
+.search-bar:focus { border-color: var(--accent); }
+
+/* STOCK ALERT */
+.stock-alert {
+  background: rgba(232,69,60,0.1);
+  border: 1px solid rgba(232,69,60,0.3);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: var(--accent2);
+  font-size: 13px;
+}
+
+/* EMPTY */
+.empty {
+  text-align: center;
+  padding: 48px;
+  color: var(--text2);
+}
+.empty .icon { font-size: 40px; margin-bottom: 12px; }
+
+/* FACTURE PRINT */
+@media print {
+  header, nav, .no-print, .app-signature { display: none !important; }
+  body { background: white; color: black; }
+  .facture-print { display: block !important; }
+}
+
+/* LOGIN */
+#login-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.login-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  width: 340px;
+  text-align: center;
+}
+.login-box .logo { font-size: 40px; margin-bottom: 6px; display: block; }
+.login-box p { color: var(--text2); margin-bottom: 24px; }
+.user-list { display: flex; flex-direction: column; gap: 10px; }
+.user-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-btn:hover { border-color: var(--accent); color: var(--accent); }
+.user-btn .role { font-size: 11px; color: var(--text2); }
+.user-btn .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+
+/* FACTURE VIEW */
+.facture-container {
+  background: white;
+  color: #1a1a1a;
+  padding: 32px;
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+.facture-container h1 { font-size: 28px; font-family: 'Bebas Neue', cursive; color: #f5a623; margin-bottom: 4px; }
+.facture-meta { color: #666; font-size: 13px; margin-bottom: 24px; }
+.facture-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+.facture-table th { background: #f5a623; color: #000; padding: 8px 12px; text-align: left; font-size: 12px; text-transform: uppercase; }
+.facture-table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+.facture-total { text-align: right; font-size: 18px; font-weight: 700; margin-top: 12px; }
+
+.actions-cell { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* SIGNATURE */
+.app-signature {
+  text-align: center;
+  color: #888;
+  font-size: 10px;
+  padding: 8px;
+  border-top: 1px solid #222;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <span class="logo">🏍️ GARAGEAPP</span>
+    <p>Choisissez votre profil</p>
+    <div class="user-list" id="user-list"></div>
+    <button class="btn btn-ghost" style="margin-top:16px;width:100%" onclick="addUserPrompt()">+ Ajouter un utilisateur</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+<header>
+  <div>
+    <div class="logo">🏍️ GARAGEAPP</div>
+  </div>
+  <div class="header-right">
+    <span class="user-badge" id="current-user-badge">—</span>
+    <button class="btn btn-ghost btn-sm" onclick="logout()">Déconnexion</button>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('dashboard', this)">📊 Tableau de bord</button>
+  <button onclick="showPage('clients', this)">👤 Clients</button>
+  <button onclick="showPage('reparations', this)">🔧 Réparations</button>
+  <button onclick="showPage('stock', this)">📦 Stock pièces</button>
+  <button onclick="showPage('facturation', this)">🧾 Facturation</button>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div id="dashboard-content"></div>
+</div>
+
+<!-- CLIENTS -->
+<div id="page-clients" class="page">
+  <div class="section-header">
+    <h2>Clients</h2>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input class="search-bar" placeholder="Rechercher..." oninput="renderClients(this.value)">
+      <button class="btn btn-primary" onclick="openModal('client')">+ Nouveau client</button>
+    </div>
+  </div>
+  <div id="clients-table"></div>
+</div>
+
+<!-- RÉPARATIONS -->
+<div id="page-reparations" class="page">
+  <div class="section-header">
+    <h2>Réparations</h2>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input class="search-bar" placeholder="Rechercher..." oninput="renderReparations(this.value)">
+      <button class="btn btn-primary" onclick="openModal('reparation')">+ Nouvelle réparation</button>
+    </div>
+  </div>
+  <div id="reparations-table"></div>
+</div>
+
+<!-- STOCK -->
+<div id="page-stock" class="page">
+  <div class="section-header">
+    <h2>Stock de pièces</h2>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input class="search-bar" placeholder="Rechercher..." oninput="renderStock(this.value)">
+      <button class="btn btn-primary" onclick="openModal('piece')">+ Ajouter pièce</button>
+    </div>
+  </div>
+  <div id="stock-alert-zone"></div>
+  <div id="stock-table"></div>
+</div>
+
+<!-- FACTURATION -->
+<div id="page-facturation" class="page">
+  <div class="section-header">
+    <h2>Factures & Devis</h2>
+    <button class="btn btn-primary" onclick="openModal('facture')">+ Nouvelle facture</button>
+  </div>
+  <div id="facturation-table"></div>
+</div>
+
+</main>
+
+<div class="app-signature">
+  © 2026 - Application développée par Abdoul Chenet
+</div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Modal Client -->
+<div class="modal-overlay" id="modal-client">
+  <div class="modal">
+    <h3 id="modal-client-title">Nouveau client</h3>
+    <input type="hidden" id="client-id">
+    <div class="form-group"><label>Nom complet *</label><input id="c-nom" placeholder="Ex: Konan Kouamé"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Téléphone</label><input id="c-tel" placeholder="+225 07..."></div>
+      <div class="form-group"><label>Ville</label><input id="c-ville" placeholder="Abidjan"></div>
+    </div>
+    <div class="form-group"><label>Motos (marque/modèle)</label><input id="c-motos" placeholder="Honda CBF 125, Yamaha YBR..."></div>
+    <div class="form-group"><label>Notes</label><textarea id="c-notes" placeholder="Infos supplémentaires..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('client')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveClient()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Réparation -->
+<div class="modal-overlay" id="modal-reparation">
+  <div class="modal">
+    <h3 id="modal-rep-title">Nouvelle réparation</h3>
+    <input type="hidden" id="rep-id">
+    <div class="form-row">
+      <div class="form-group"><label>Client *</label><select id="r-client"></select></div>
+      <div class="form-group"><label>Moto</label><input id="r-moto" placeholder="Honda CBF 125"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Mécanicien *</label><select id="r-mecanicien"></select></div>
+      <div class="form-group"><label>Date entrée</label><input type="date" id="r-date"></div>
+    </div>
+    <div class="form-group"><label>Description panne</label><textarea id="r-panne" placeholder="Décrivez le problème..."></textarea></div>
+    <div class="form-group"><label>Travaux effectués</label><textarea id="r-travaux" placeholder="Réparations réalisées..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Coût main d'œuvre (FCFA)</label><input type="number" id="r-cout" placeholder="0"></div>
+      <div class="form-group"><label>Statut</label>
+        <select id="r-statut">
+          <option value="en_attente">En attente</option>
+          <option value="en_cours">En cours</option>
+          <option value="termine">Terminé</option>
+          <option value="livre">Livré</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('reparation')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveReparation()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pièce -->
+<div class="modal-overlay" id="modal-piece">
+  <div class="modal">
+    <h3 id="modal-piece-title">Ajouter une pièce</h3>
+    <input type="hidden" id="piece-id">
+    <div class="form-group"><label>Nom de la pièce *</label><input id="p-nom" placeholder="Ex: Filtre à huile Honda"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Référence</label><input id="p-ref" placeholder="REF-001"></div>
+      <div class="form-group"><label>Compatible avec</label><input id="p-compat" placeholder="Honda CBF, Yamaha..."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Quantité en stock *</label><input type="number" id="p-qte" placeholder="0" min="0"></div>
+      <div class="form-group"><label>Alerte stock bas (qté min)</label><input type="number" id="p-alert" placeholder="5" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix d'achat (FCFA)</label><input type="number" id="p-achat" placeholder="0"></div>
+      <div class="form-group"><label>Prix de vente (FCFA)</label><input type="number" id="p-vente" placeholder="0"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('piece')">Annuler</button>
+      <button class="btn btn-primary" onclick="savePiece()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Facture -->
+<div class="modal-overlay" id="modal-facture">
+  <div class="modal" style="max-width:600px">
+    <h3>Nouvelle facture / devis</h3>
+    <input type="hidden" id="fac-id">
+    <div class="form-row">
+      <div class="form-group"><label>Client *</label><select id="f-client"></select></div>
+      <div class="form-group"><label>Type</label>
+        <select id="f-type">
+          <option value="facture">Facture</option>
+          <option value="devis">Devis</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Réparation liée (optionnel)</label><select id="f-rep"><option value="">— Aucune —</option></select></div>
+    <div class="form-group">
+      <label>Lignes de facturation</label>
+      <div id="fac-lines"></div>
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addFacLine()">+ Ajouter une ligne</button>
+    </div>
+    <div style="text-align:right;margin-top:8px;font-weight:700;font-size:16px">
+      Total: <span id="fac-total-preview" style="color:var(--accent)">0 FCFA</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('facture')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveFacture()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Facture View -->
+<div class="modal-overlay" id="modal-view-facture">
+  <div class="modal" style="max-width:750px;background:white;color:#1a1a1a">
+    <div id="facture-view-content"></div>
+    <div class="modal-actions no-print">
+      <button class="btn btn-ghost" onclick="closeModal('view-facture')" style="border-color:#ccc;color:#333">Fermer</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal ajout utilisateur -->
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal" style="max-width:380px">
+    <h3>Ajouter un utilisateur</h3>
+    <div class="form-group"><label>Nom *</label><input id="new-user-name" placeholder="Prénom Nom"></div>
+    <div class="form-group"><label>Rôle</label>
+      <select id="new-user-role">
+        <option value="patron">Patron</option>
+        <option value="mecanicien">Mécanicien</option>
+        <option value="caissier">Caissier</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('add-user')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveNewUser()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== DATA LAYER ==========
+function getData(key, def=[]) {
+  try { return JSON.parse(localStorage.getItem('garage_' + key)) || def; } catch(e) { return def; }
+}
+function setData(key, val) {
+  localStorage.setItem('garage_' + key, JSON.stringify(val));
+}
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function fmtDate(d) { if (!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('fr-FR'); }
+function fmtMoney(n) { return Number(n||0).toLocaleString('fr-FR') + ' FCFA'; }
+
+// ========== USERS ==========
+let currentUser = null;
+
+function getUsers() { return getData('users', []); }
+function setUsers(u) { setData('users', u); }
+
+function initUsers() {
+  if (getUsers().length === 0) {
+    setUsers([
+      { id: genId(), name: 'Patron', role: 'patron' },
+      { id: genId(), name: 'Mécanicien 1', role: 'mecanicien' }
+    ]);
+  }
+}
+
+function renderLoginScreen() {
+  const users = getUsers();
+  const list = document.getElementById('user-list');
+  list.innerHTML = users.map(u => `
+    <button class="user-btn" onclick="login('${u.id}')">
+      <div class="avatar">${u.name[0].toUpperCase()}</div>
+      <div>
+        <div>${u.name}</div>
+        <div class="role">${u.role}</div>
+      </div>
+    </button>
+  `).join('');
+}
+
+function login(userId) {
+  const users = getUsers();
+  currentUser = users.find(u => u.id === userId);
+  if (!currentUser) return;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('current-user-badge').textContent = currentUser.name + ' · ' + currentUser.role;
+  renderDashboard();
+  renderClients();
+  renderReparations();
+  renderStock();
+  renderFacturation();
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  renderLoginScreen();
+}
+
+function addUserPrompt() {
+  document.getElementById('new-user-name').value = '';
+  openModal('add-user');
+}
+
+function saveNewUser() {
+  const name = document.getElementById('new-user-name').value.trim();
+  if (!name) return alert('Nom requis');
+  const role = document.getElementById('new-user-role').value;
+  const users = getUsers();
+  users.push({ id: genId(), name, role });
+  setUsers(users);
+  closeModal('add-user');
+  renderLoginScreen();
+}
+
+// ========== PAGES ==========
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'dashboard') renderDashboard();
+}
+
+// ========== DASHBOARD ==========
+function renderDashboard() {
+  const clients = getData('clients');
+  const reps = getData('reparations');
+  const stock = getData('stock');
+  const factures = getData('factures');
+
+  const enCours = reps.filter(r => r.statut === 'en_cours').length;
+  const enAttente = reps.filter(r => r.statut === 'en_attente').length;
+  const totalCA = factures.filter(f => f.type === 'facture').reduce((s, f) => s + (f.total || 0), 0);
+  const stockBas = stock.filter(p => p.qte <= (p.alertMin || 5)).length;
+
+  const recentReps = reps.slice(-5).reverse();
+
+  document.getElementById('dashboard-content').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Clients</div>
+        <div class="value">${clients.length}</div>
+        <div class="sub">enregistrés</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">En cours</div>
+        <div class="value" style="color:var(--blue)">${enCours}</div>
+        <div class="sub">${enAttente} en attente</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Chiffre d'affaires</div>
+        <div class="value" style="font-size:24px">${(totalCA/1000).toFixed(0)}K</div>
+        <div class="sub">FCFA total facturé</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Stock bas</div>
+        <div class="value" style="color:${stockBas > 0 ? 'var(--accent2)' : 'var(--green)'}">${stockBas}</div>
+        <div class="sub">pièces à réapprovisionner</div>
+      </div>
+    </div>
+
+    <div class="section-header"><h2>Réparations récentes</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Client</th><th>Moto</th><th>Mécanicien</th><th>Date</th><th>Statut</th></tr></thead>
+        <tbody>
+          ${recentReps.length === 0 ? '<tr><td colspan="5" style="text-align:center;color:var(--text2);padding:24px">Aucune réparation</td></tr>' :
+            recentReps.map(r => {
+              const client = getData('clients').find(c => c.id === r.clientId);
+              return `<tr>
+                <td>${client ? client.nom : '—'}</td>
+                <td>${r.moto || '—'}</td>
+                <td>${r.mecanicien || '—'}</td>
+                <td>${fmtDate(r.date)}</td>
+                <td>${statutBadge(r.statut)}</td>
+              </tr>`;
+            }).join('')
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function statutBadge(s) {
+  const map = {
+    en_attente: ['badge-orange', 'En attente'],
+    en_cours: ['badge-blue', 'En cours'],
+    termine: ['badge-green', 'Terminé'],
+    livre: ['badge-green', 'Livré'],
+  };
+  const [cls, label] = map[s] || ['badge-orange', s];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+// ========== CLIENTS ==========
+function renderClients(search='') {
+  let clients = getData('clients');
+  if (search) clients = clients.filter(c => (c.nom + c.tel + c.motos + c.ville).toLowerCase().includes(search.toLowerCase()));
+  const html = clients.length === 0 ? `<div class="table-wrap"><div class="empty"><div class="icon">👤</div>Aucun client enregistré</div></div>` :
+    `<div class="table-wrap"><table>
+      <thead><tr><th>Nom</th><th>Téléphone</th><th>Ville</th><th>Motos</th><th>Notes</th><th>Actions</th></tr></thead>
+      <tbody>${clients.map(c => `<tr>
+        <td><strong>${c.nom}</strong></td>
+        <td><span style="font-family:'IBM Plex Mono',monospace">${c.tel || '—'}</span></td>
+        <td>${c.ville || '—'}</td>
+        <td style="color:var(--text2)">${c.motos || '—'}</td>
+        <td style="color:var(--text2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.notes || '—'}</td>
+        <td><div class="actions-cell">
+          <button class="btn btn-ghost btn-sm" onclick="editClient('${c.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}')">🗑</button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  document.getElementById('clients-table').innerHTML = html;
+}
+
+function openModal(type) {
+  if (type === 'client') {
+    document.getElementById('client-id').value = '';
+    document.getElementById('modal-client-title').textContent = 'Nouveau client';
+    ['c-nom','c-tel','c-ville','c-motos','c-notes'].forEach(id => document.getElementById(id).value = '');
+  } else if (type === 'reparation') {
+    document.getElementById('rep-id').value = '';
+    document.getElementById('modal-rep-title').textContent = 'Nouvelle réparation';
+    document.getElementById('r-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('r-panne').value = '';
+    document.getElementById('r-travaux').value = '';
+    document.getElementById('r-cout').value = '';
+    document.getElementById('r-statut').value = 'en_attente';
+    document.getElementById('r-moto').value = '';
+    populateSelect('r-client', getData('clients').map(c => ({value: c.id, label: c.nom})));
+    const users = getUsers().map(u => ({value: u.name, label: u.name + ' (' + u.role + ')'}));
+    populateSelect('r-mecanicien', users, currentUser ? currentUser.name : '');
+  } else if (type === 'piece') {
+    document.getElementById('piece-id').value = '';
+    document.getElementById('modal-piece-title').textContent = 'Ajouter une pièce';
+    ['p-nom','p-ref','p-compat','p-qte','p-alert','p-achat','p-vente'].forEach(id => document.getElementById(id).value = '');
+  } else if (type === 'facture') {
+    document.getElementById('fac-id').value = '';
+    populateSelect('f-client', getData('clients').map(c => ({value: c.id, label: c.nom})));
+    const repOpts = getData('reparations').map(r => {
+      const cl = getData('clients').find(c => c.id === r.clientId);
+      return { value: r.id, label: (cl ? cl.nom : '?') + ' — ' + (r.moto || 'moto') };
+    });
+    const fRepSel = document.getElementById('f-rep');
+    fRepSel.innerHTML = '<option value="">— Aucune —</option>' + repOpts.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+    document.getElementById('fac-lines').innerHTML = '';
+    document.getElementById('fac-total-preview').textContent = '0 FCFA';
+    addFacLine();
+  }
+  document.getElementById('modal-' + type).classList.add('open');
+}
+
+function closeModal(type) {
+  document.getElementById('modal-' + type).classList.remove('open');
+}
+
+function populateSelect(id, options, selectedVal='') {
+  const sel = document.getElementById(id);
+  sel.innerHTML = options.map(o => `<option value="${o.value}" ${o.value == selectedVal ? 'selected' : ''}>${o.label}</option>`).join('');
+}
+
+function saveClient() {
+  const id = document.getElementById('client-id').value || genId();
+  const nom = document.getElementById('c-nom').value.trim();
+  if (!nom) return alert('Nom requis');
+  const clients = getData('clients');
+  const idx = clients.findIndex(c => c.id === id);
+  const client = { id, nom, tel: document.getElementById('c-tel').value, ville: document.getElementById('c-ville').value, motos: document.getElementById('c-motos').value, notes: document.getElementById('c-notes').value };
+  if (idx >= 0) clients[idx] = client; else clients.push(client);
+  setData('clients', clients);
+  closeModal('client');
+  renderClients();
+  renderDashboard();
+}
+
+function editClient(id) {
+  const c = getData('clients').find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('client-id').value = c.id;
+  document.getElementById('modal-client-title').textContent = 'Modifier client';
+  document.getElementById('c-nom').value = c.nom || '';
+  document.getElementById('c-tel').value = c.tel || '';
+  document.getElementById('c-ville').value = c.ville || '';
+  document.getElementById('c-motos').value = c.motos || '';
+  document.getElementById('c-notes').value = c.notes || '';
+  document.getElementById('modal-client').classList.add('open');
+}
+
+function deleteClient(id) {
+  if (!confirm('Supprimer ce client ?')) return;
+  setData('clients', getData('clients').filter(c => c.id !== id));
+  renderClients();
+  renderDashboard();
+}
+
+// ========== RÉPARATIONS ==========
+function renderReparations(search='') {
+  let reps = getData('reparations');
+  if (search) reps = reps.filter(r => {
+    const cl = getData('clients').find(c => c.id === r.clientId);
+    return (r.moto + r.mecanicien + r.panne + (cl ? cl.nom : '')).toLowerCase().includes(search.toLowerCase());
+  });
+  reps = reps.slice().reverse();
+  const html = reps.length === 0 ? `<div class="table-wrap"><div class="empty"><div class="icon">🔧</div>Aucune réparation enregistrée</div></div>` :
+    `<div class="table-wrap"><table>
+      <thead><tr><th>Client</th><th>Moto</th><th>Panne</th><th>Mécanicien</th><th>Date</th><th>Coût MO</th><th>Statut</th><th>Actions</th></tr></thead>
+      <tbody>${reps.map(r => {
+        const client = getData('clients').find(c => c.id === r.clientId);
+        return `<tr>
+          <td><strong>${client ? client.nom : '—'}</strong></td>
+          <td>${r.moto || '—'}</td>
+          <td style="color:var(--text2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.panne || '—'}</td>
+          <td>${r.mecanicien || '—'}</td>
+          <td>${fmtDate(r.date)}</td>
+          <td style="font-family:'IBM Plex Mono',monospace">${r.cout ? fmtMoney(r.cout) : '—'}</td>
+          <td>${statutBadge(r.statut)}</td>
+          <td><div class="actions-cell">
+            <button class="btn btn-ghost btn-sm" onclick="editRep('${r.id}')">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRep('${r.id}')">🗑</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  document.getElementById('reparations-table').innerHTML = html;
+}
+
+function saveReparation() {
+  const id = document.getElementById('rep-id').value || genId();
+  const clientId = document.getElementById('r-client').value;
+  if (!clientId) return alert('Client requis');
+  const reps = getData('reparations');
+  const idx = reps.findIndex(r => r.id === id);
+  const rep = { id, clientId, moto: document.getElementById('r-moto').value, mecanicien: document.getElementById('r-mecanicien').value, date: document.getElementById('r-date').value, panne: document.getElementById('r-panne').value, travaux: document.getElementById('r-travaux').value, cout: parseFloat(document.getElementById('r-cout').value) || 0, statut: document.getElementById('r-statut').value };
+  if (idx >= 0) reps[idx] = rep; else reps.push(rep);
+  setData('reparations', reps);
+  closeModal('reparation');
+  renderReparations();
+  renderDashboard();
+}
+
+function editRep(id) {
+  const r = getData('reparations').find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('rep-id').value = r.id;
+  document.getElementById('modal-rep-title').textContent = 'Modifier réparation';
+  populateSelect('r-client', getData('clients').map(c => ({value: c.id, label: c.nom})), r.clientId);
+  const users = getUsers().map(u => ({value: u.name, label: u.name + ' (' + u.role + ')'}));
+  populateSelect('r-mecanicien', users, r.mecanicien);
+  document.getElementById('r-moto').value = r.moto || '';
+  document.getElementById('r-date').value = r.date || '';
+  document.getElementById('r-panne').value = r.panne || '';
+  document.getElementById('r-travaux').value = r.travaux || '';
+  document.getElementById('r-cout').value = r.cout || '';
+  document.getElementById('r-statut').value = r.statut || 'en_attente';
+  document.getElementById('modal-reparation').classList.add('open');
+}
+
+function deleteRep(id) {
+  if (!confirm('Supprimer cette réparation ?')) return;
+  setData('reparations', getData('reparations').filter(r => r.id !== id));
+  renderReparations();
+  renderDashboard();
+}
+
+// ========== STOCK ==========
+function renderStock(search='') {
+  let stock = getData('stock');
+  if (search) stock = stock.filter(p => (p.nom + p.ref + p.compat).toLowerCase().includes(search.toLowerCase()));
+  const bas = stock.filter(p => p.qte <= (p.alertMin || 5));
+  const alertZone = document.getElementById('stock-alert-zone');
+  alertZone.innerHTML = bas.length > 0 ? `<div class="stock-alert">⚠️ Stock bas : <strong>${bas.map(p => p.nom).join(', ')}</strong></div>` : '';
+  const html = stock.length === 0 ? `<div class="table-wrap"><div class="empty"><div class="icon">📦</div>Aucune pièce en stock</div></div>` :
+    `<div class="table-wrap"><table>
+      <thead><tr><th>Pièce</th><th>Réf.</th><th>Compatible</th><th>Stock</th><th>P. Achat</th><th>P. Vente</th><th>Actions</th></tr></thead>
+      <tbody>${stock.map(p => {
+        const isLow = p.qte <= (p.alertMin || 5);
+        return `<tr>
+          <td><strong>${p.nom}</strong></td>
+          <td style="font-family:'IBM Plex Mono',monospace;color:var(--text2)">${p.ref || '—'}</td>
+          <td style="color:var(--text2)">${p.compat || '—'}</td>
+          <td><span class="badge ${isLow ? 'badge-red' : 'badge-green'}">${p.qte}</span></td>
+          <td style="font-family:'IBM Plex Mono',monospace">${p.achat ? fmtMoney(p.achat) : '—'}</td>
+          <td style="font-family:'IBM Plex Mono',monospace">${p.vente ? fmtMoney(p.vente) : '—'}</td>
+          <td><div class="actions-cell">
+            <button class="btn btn-ghost btn-sm" onclick="editPiece('${p.id}')">✏️</button>
+            <button class="btn btn-green btn-sm" onclick="ajusterStock('${p.id}', 1)">+1</button>
+            <button class="btn btn-ghost btn-sm" onclick="ajusterStock('${p.id}', -1)">-1</button>
+            <button class="btn btn-danger btn-sm" onclick="deletePiece('${p.id}')">🗑</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  document.getElementById('stock-table').innerHTML = html;
+}
+
+function savePiece() {
+  const id = document.getElementById('piece-id').value || genId();
+  const nom = document.getElementById('p-nom').value.trim();
+  if (!nom) return alert('Nom requis');
+  const stock = getData('stock');
+  const idx = stock.findIndex(p => p.id === id);
+  const piece = { id, nom, ref: document.getElementById('p-ref').value, compat: document.getElementById('p-compat').value, qte: parseInt(document.getElementById('p-qte').value) || 0, alertMin: parseInt(document.getElementById('p-alert').value) || 5, achat: parseFloat(document.getElementById('p-achat').value) || 0, vente: parseFloat(document.getElementById('p-vente').value) || 0 };
+  if (idx >= 0) stock[idx] = piece; else stock.push(piece);
+  setData('stock', stock);
+  closeModal('piece');
+  renderStock();
+}
+
+function editPiece(id) {
+  const p = getData('stock').find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('piece-id').value = p.id;
+  document.getElementById('modal-piece-title').textContent = 'Modifier pièce';
+  document.getElementById('p-nom').value = p.nom || '';
+  document.getElementById('p-ref').value = p.ref || '';
+  document.getElementById('p-compat').value = p.compat || '';
+  document.getElementById('p-qte').value = p.qte || 0;
+  document.getElementById('p-alert').value = p.alertMin || 5;
+  document.getElementById('p-achat').value = p.achat || '';
+  document.getElementById('p-vente').value = p.vente || '';
+  document.getElementById('modal-piece').classList.add('open');
+}
+
+function ajusterStock(id, delta) {
+  const stock = getData('stock');
+  const idx = stock.findIndex(p => p.id === id);
+  if (idx >= 0) { stock[idx].qte = Math.max(0, (stock[idx].qte || 0) + delta); setData('stock', stock); renderStock(); }
+}
+
+function deletePiece(id) {
+  if (!confirm('Supprimer cette pièce ?')) return;
+  setData('stock', getData('stock').filter(p => p.id !== id));
+  renderStock();
+}
+
+// ========== FACTURATION ==========
+let facLines = [];
+
+function addFacLine() {
+  const lineId = 'line-' + Date.now();
+  facLines.push(lineId);
+  const div = document.createElement('div');
+  div.id = lineId;
+  div.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center';
+  div.innerHTML = `
+    <input class="fac-desc" placeholder="Description" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:7px;font-family:'IBM Plex Sans',sans-serif" oninput="updateTotal()">
+    <input class="fac-qte" type="number" placeholder="Qté" value="1" min="1" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:7px;font-family:'IBM Plex Mono',monospace" oninput="updateTotal()">
+    <input class="fac-pu" type="number" placeholder="P.U FCFA" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:7px;font-family:'IBM Plex Mono',monospace" oninput="updateTotal()">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removeFacLine('${lineId}')">✕</button>
+  `;
+  document.getElementById('fac-lines').appendChild(div);
+}
+
+function removeFacLine(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+  facLines = facLines.filter(l => l !== id);
+  updateTotal();
+}
+
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll('#fac-lines > div').forEach(row => {
+    const qte = parseFloat(row.querySelector('.fac-qte').value) || 0;
+    const pu = parseFloat(row.querySelector('.fac-pu').value) || 0;
+    total += qte * pu;
+  });
+  document.getElementById('fac-total-preview').textContent = fmtMoney(total);
+}
+
+function saveFacture() {
+  const clientId = document.getElementById('f-client').value;
+  if (!clientId) return alert('Client requis');
+  const lines = [];
+  document.querySelectorAll('#fac-lines > div').forEach(row => {
+    const desc = row.querySelector('.fac-desc').value;
+    const qte = parseFloat(row.querySelector('.fac-qte').value) || 1;
+    const pu = parseFloat(row.querySelector('.fac-pu').value) || 0;
+    if (desc) lines.push({ desc, qte, pu, total: qte * pu });
+  });
+  if (lines.length === 0) return alert('Au moins une ligne requise');
+  const total = lines.reduce((s, l) => s + l.total, 0);
+  const factures = getData('factures');
+  const id = document.getElementById('fac-id').value || genId();
+  const num = 'FAC-' + String(factures.length + 1).padStart(4, '0');
+  const fac = { id, num, clientId, type: document.getElementById('f-type').value, repId: document.getElementById('f-rep').value, lines, total, date: new Date().toISOString().split('T')[0] };
+  const idx = factures.findIndex(f => f.id === id);
+  if (idx >= 0) factures[idx] = fac; else factures.push(fac);
+  setData('factures', factures);
+  closeModal('facture');
+  facLines = [];
+  renderFacturation();
+  renderDashboard();
+}
+
+function renderFacturation() {
+  const factures = getData('factures').slice().reverse();
+  const html = factures.length === 0 ? `<div class="table-wrap"><div class="empty"><div class="icon">🧾</div>Aucune facture créée</div></div>` :
+    `<div class="table-wrap"><table>
+      <thead><tr><th>N°</th><th>Type</th><th>Client</th><th>Date</th><th>Total</th><th>Actions</th></tr></thead>
+      <tbody>${factures.map(f => {
+        const client = getData('clients').find(c => c.id === f.clientId);
+        return `<tr>
+          <td><span style="font-family:'IBM Plex Mono',monospace;color:var(--accent)">${f.num}</span></td>
+          <td><span class="badge ${f.type === 'facture' ? 'badge-green' : 'badge-blue'}">${f.type === 'facture' ? 'Facture' : 'Devis'}</span></td>
+          <td>${client ? client.nom : '—'}</td>
+          <td>${fmtDate(f.date)}</td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-weight:600">${fmtMoney(f.total)}</td>
+          <td><div class="actions-cell">
+            <button class="btn btn-ghost btn-sm" onclick="viewFacture('${f.id}')">👁 Voir</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteFacture('${f.id}')">🗑</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  document.getElementById('facturation-table').innerHTML = html;
+}
+
+function viewFacture(id) {
+  const f = getData('factures').find(x => x.id === id);
+  if (!f) return;
+  const client = getData('clients').find(c => c.id === f.clientId);
+  const html = `
+    <div style="border-bottom:3px solid #f5a623;padding-bottom:16px;margin-bottom:16px">
+      <div style="font-family:'Bebas Neue',cursive;font-size:32px;color:#f5a623">🏍️ GARAGEAPP</div>
+      <div style="color:#666;font-size:12px">Gestion de Garage Moto</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:24px">
+      <div>
+        <div style="font-size:20px;font-weight:700">${f.type === 'facture' ? 'FACTURE' : 'DEVIS'} ${f.num}</div>
+        <div style="color:#666;margin-top:4px">Date : ${fmtDate(f.date)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700">${client ? client.nom : '—'}</div>
+        <div style="color:#666">${client ? client.tel || '' : ''}</div>
+        <div style="color:#666">${client ? client.ville || '' : ''}</div>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:#f5a623;color:#000">
+        <th style="padding:10px;text-align:left">Description</th>
+        <th style="padding:10px;text-align:center">Qté</th>
+        <th style="padding:10px;text-align:right">P.U</th>
+        <th style="padding:10px;text-align:right">Total</th>
+      </tr></thead>
+      <tbody>${f.lines.map((l, i) => `<tr style="background:${i%2===0?'#f9f9f9':'white'}">
+        <td style="padding:10px">${l.desc}</td>
+        <td style="padding:10px;text-align:center">${l.qte}</td>
+        <td style="padding:10px;text-align:right">${Number(l.pu).toLocaleString('fr-FR')}</td>
+        <td style="padding:10px;text-align:right;font-weight:600">${Number(l.total).toLocaleString('fr-FR')}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div style="text-align:right;margin-top:16px;padding-top:12px;border-top:2px solid #333">
+      <span style="font-size:20px;font-weight:800">TOTAL : ${fmtMoney(f.total)}</span>
+    </div>
+    <div style="margin-top:32px;color:#666;font-size:12px;text-align:center">Merci de votre confiance — GarageApp</div>
+  `;
+  document.getElementById('facture-view-content').innerHTML = html;
+  document.getElementById('modal-view-facture').classList.add('open');
+}
+
+function deleteFacture(id) {
+  if (!confirm('Supprimer cette facture ?')) return;
+  setData('factures', getData('factures').filter(f => f.id !== id));
+  renderFacturation();
+  renderDashboard();
+}
+
+// ========== INIT ==========
+window.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.classList.remove('open');
+  }
+});
+
+initUsers();
+renderLoginScreen();
+</script>
+</body>
+</html>
