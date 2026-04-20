@@ -1,0 +1,13 @@
+{
+  "background_color": "#0f0f0f",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "GarageApp",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Garage",
+  "start_url": "/",
+  "theme_color": "#f5a623",
+  "id": "garageapp-abdoul",
+  "description": "Application simple pour gérer un garage moto : clients, réparations, stock et facturation."
+}
